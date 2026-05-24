@@ -40,19 +40,32 @@ def start_gui():
             f"${amount:.2f} "
             f"{description}"
         )
+        price_diff = 0
         try:
-            remove_item(wishlist, description)
+            price_diff = remove_item(wishlist, description, amount)
         except:
             pass
 
         # Show result
-        result_label.config(
-            text=f"Enjoy Your {category}! 💖",
-            fg="red",
-            font=("Arial", 18, "bold")
-        )
-        list_result = get_items(wishlist)
-        special_label.config(text=f"Wishlist: {list_result}")
+        if price_diff > 0:
+            result_label.config(
+                text=f"You are losing your money!🙀 ",
+                fg="red",
+                font=("Arial", 18, "bold")
+            )
+        elif price_diff<0:
+            result_label.config(
+                text=f"Good saver!🥳 ",
+                fg="red",
+                font=("Arial", 18, "bold")
+            )
+        else:
+            result_label.config(
+                text=f"Enjoy Your {category}! 💖",
+                fg="red",
+                font=("Arial", 18, "bold")
+            )
+        update_wishlist_display(wishlist, balance)
         update_balance_display(balance_label, balance)
         # Update expense display
         update_show_list()
@@ -84,11 +97,12 @@ def start_gui():
 
         # Show result
         result_label.config(
-            text=f"Good saver! 👍",
+            text=f"You are a money maker! 👍",
             fg="red",
             font=("Arial", 18, "bold")
         )
         update_balance_display(balance_label, balance)
+        update_wishlist_display(wishlist, balance)
         # Update expense display
         update_show_list()
         # Clear input boxes
@@ -114,13 +128,12 @@ def start_gui():
             return
         # Add item
         add_item(wishlist, name, price)
+        balance = finance.show_balance(finance_data)
         screen_show.append(f"Add {name} into wishlist")
 
-        list_result = get_items(wishlist)
-
         # Refresh display
-        result_label.config(text=f"Go for {name}", fg="red", font=("Arial", 18, "bold"))
-        special_label.config(text=f"Wishlist: {list_result}")
+        result_label.config(text=f"Go for {name}!💪", fg="red", font=("Arial", 18, "bold"))
+        update_wishlist_display(wishlist, balance)
         update_show_list()
         # Clear input boxes
         name_entry.delete(0, tk.END)
@@ -152,6 +165,19 @@ def start_gui():
         update_show_list()
         # Clear input boxes
         category_entry.delete(0, tk.END)
+
+    def update_wishlist_display(wishlist, balance):
+        special_text.delete("1.0", tk.END)
+        special_text.insert(tk.END, "Wishlist: ")
+        for item in wishlist:
+            text = f"{item.name}: ${item.price}  "
+            # 能买得起 → 绿色
+            if item.price <= balance:
+                special_text.insert(tk.END, text, "affordable")
+            else:
+                special_text.insert(tk.END, text, "normal")
+        special_text.tag_config("affordable", foreground="green")
+        special_text.tag_config("normal", foreground="black")
 
     def update_balance_display(balance_label, balance):
         if balance < 0:
@@ -211,13 +237,9 @@ def start_gui():
     balance = finance.show_balance(finance_data)
     update_balance_display(balance_label, balance)
 
-    special_label = tk.Label(
-        wishlist_frame,
-        text="Special Wishlist:"
-    )
-    special_label.pack()
-    list_result = get_items(wishlist)
-    special_label.config(text=f"Wishlist: {list_result}")
+    special_text = tk.Text(wishlist_frame, height=2, width=30)
+    special_text.pack()
+    update_wishlist_display(wishlist, balance)
 
     # ============ 中间部分：左右两列 ============
     middle_frame = tk.Frame(window)

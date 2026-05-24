@@ -55,16 +55,12 @@ def add_item(wishlist, name, price):
     save_wishlist(wishlist)
 
 
-def remove_item(wishlist, name):
+def remove_item(wishlist, name, price):
+    price_diff = 0
     for item in wishlist:
         if item.name == name:
             wishlist.remove(item)
+            price_diff = price-item.price
             break
     save_wishlist(wishlist)
-
-
-def get_items(wishlist):
-    result = ''
-    for item in wishlist:
-        result += f"{item.name}: ${item.price}    "
-    return result
+    return price_diff

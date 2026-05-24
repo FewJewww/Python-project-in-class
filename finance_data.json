@@ -1,0 +1,25 @@
+{
+    "income": 2200.0,
+    "expenses": [
+        {
+            "category": "clothes",
+            "amount": 100.0,
+            "description": "dress"
+        },
+        {
+            "category": "jewel",
+            "amount": 2000.0,
+            "description": "tiara"
+        },
+        {
+            "category": "toy",
+            "amount": 50.0,
+            "description": "zjl"
+        },
+        {
+            "category": "food",
+            "amount": 5.0,
+            "description": "mcdonald"
+        }
+    ]
+}
